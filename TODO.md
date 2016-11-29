@@ -4,7 +4,7 @@
 These modules are concerned with how the game object data (a creature's hitpoints, or a sword's hardness) are defined, manipulated, and used.
 
 ### Parser
-The Parser module accepts an infix expression (as a string) and produces a callable object (formula) which, when called, evaluates the expression (returning either a single value or a tuple of values).
+The Parser module provides a Parser object; this object accepts an infix expression (as a string) and produces a callable object (formula) which, when called, evaluates the expression (returning either a single value or a tuple of values). Parser objects accept keyword assignments; these keywords become the 'namespace' for the expression.
 
 *Dependencies*: None.
 + *core unit-test*: Not yet.
@@ -13,7 +13,7 @@ The Parser module accepts an infix expression (as a string) and produces a calla
 + *peripheral tests*: Not yet.
 
 ### Reader
-The Reader module opens a *.dat file and evaluates its contents based on a lightweight ruleset to produce a dictionary of organized values (strings, ints, floats, lists, sets, and dictionaries).
+The Reader module opens a .dat file and evaluates its contents based on a lightweight ruleset to produce a dictionary of organized values (strings, ints, floats, lists, sets, and dictionaries). 
 
 *Dependencies*: None.
 + *core unit-test*: Not yet.
