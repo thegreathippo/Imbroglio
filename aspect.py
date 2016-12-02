@@ -7,7 +7,7 @@ monster = 2
 
 
 class AspectType(type):
-  
+  """Metaclass for Aspects."""
   def __new__(cls, name, bases, namespace):
     new_cls = super().__new__(cls, name, bases, namespace)
     if new_cls.root:
@@ -15,38 +15,81 @@ class AspectType(type):
     return new_cls
 
 
-class BaseAspect(metaclass=AspectType):
+class BaseAspect(dict, metaclass=AspectType):
+  """Base class for Aspects."""
   domain = {}
   priority = 0
   root = None
 
   def __init__(self, *args):
-    self.__dict__.update({k:v for k, v in self.root.items() if k in args})
+    super().__init__()
+    self.update({k:v for k, v in self.root.items() if k in args})
 
   def setup(self):
-    print("Setting up... " + str(self))
+    pass
   
   def start(self):
-    print("Starting... " + str(self))
     for uid in self._get_uids():
       self.run(uid)
 
   def run(self, uid):
-    print("Running... " + str(self) + ": " + str(uid))
+    print(self)
 
   def teardown(self):
-    print("Tearing down... " + str(self))
+    pass
 
   def _get_uids(self):
-    if self.__dict__:
-      return list(set.intersection(*[set(s) for s in self.__dict__.values()]))
+    if self:
+      return list(set.intersection(*[set(s) for s in self.values()]))
     return list()
+
+  def __repr__(self):
+    return self.__class__.__name__ + " " + super().__repr__()
 
 
 class Components(dict):
   def __init__(self, *args):
 
     class Aspect(BaseAspect):
+      root = self
+
+    super().__init__()
+    self._aspects = list()
+    for arg in args:
+      self[arg] = _Entities()
+    self.Aspect = Aspect
+
+  def add_aspect(self, cls):
+    self._aspects.append(cls(*cls.domain))
+    self._aspects.sort(key=lambda x: x.priority)
+
+  def run(self):
+    for aspect in self._aspects:
+      aspect.setup()
+      aspect.start()
+      aspect.teardown()
+
+
+class _Entities(dict):
+  def __init__(self):
+    super().__init__()
+
+
+component = Components("x", "y")
+component["x"][player] = 1
+component["y"][player] = 2
+component["x"][monster] = 0
+
+
+class Physics(component.Aspect):
+  domain = {"x", "y"}
+  
+class Physics2(component.Aspect):
+  domain = {"x", "y"}
+  priority = -1
+
+
+component.run()
       root = self
 
     super().__init__()
