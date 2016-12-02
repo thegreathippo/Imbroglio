@@ -93,9 +93,10 @@ component["y"][monster] = 4
 
 class Physics(component.Aspect):
   domain = {"x", "y"}
-  
+
+
 class Physics2(component.Aspect):
-  domain = {"x", "y", "z"}
+  domain = {"x", "y"}
   priority = -1
 
 
