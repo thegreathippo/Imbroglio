@@ -21,19 +21,24 @@ class BaseAspect(dict, metaclass=AspectType):
   priority = 0
   root = None
 
-  def __init__(self, *args):
+  def __init__(self):
     super().__init__()
-    self.update({k:v for k, v in self.root.items() if k in args})
+    self.update({k:v for k, v in self.root.items() if k in self.domain})
+    if not set(self.domain).issubset(self.root.keys()):
+      # write a more descriptive exception later
+      raise Exception("{0} instanced with invalid domain ({1})".format(self, self.domain))
 
   def setup(self):
     pass
   
-  def start(self):
+  def process(self):
+    self.setup()
     for uid in self._get_uids():
       self.run(uid)
+    self.teardown()
 
   def run(self, uid):
-    print(self)
+    print(str(self) + ": " + str(uid))
 
   def teardown(self):
     pass
@@ -60,71 +65,37 @@ class Components(dict):
     self.Aspect = Aspect
 
   def add_aspect(self, cls):
-    self._aspects.append(cls(*cls.domain))
+    self._aspects.append(cls())
     self._aspects.sort(key=lambda x: x.priority)
 
   def run(self):
     for aspect in self._aspects:
-      aspect.setup()
-      aspect.start()
-      aspect.teardown()
+      aspect.process()
 
 
 class _Entities(dict):
   def __init__(self):
     super().__init__()
 
-
-component = Components("x", "y")
-component["x"][player] = 1
-component["y"][player] = 2
-component["x"][monster] = 0
-
-
-class Physics(component.Aspect):
-  domain = {"x", "y"}
-  
-class Physics2(component.Aspect):
-  domain = {"x", "y"}
-  priority = -1
-
-
-component.run()
-      root = self
-
-    super().__init__()
-    self._aspects = list()
-    for arg in args:
-      self[arg] = _Entities()
-    self.Aspect = Aspect
-
-  def add_aspect(self, cls):
-    self._aspects.append(cls(*cls.domain))
-    self._aspects.sort(key=lambda x: x.priority)
-
-  def run(self):
-    for aspect in self._aspects:
-      aspect.setup()
-      aspect.start()
-      aspect.teardown()
-
-
-class _Entities(dict):
-  def __init__(self):
-    super().__init__()
+  def __getitem__(self, key):
+    item = super().__getitem__(key)
+    if callable(item):
+      return item()
+    return item
 
 
 component = Components("x", "y")
 component["x"][player] = 1
 component["y"][player] = 2
 component["x"][monster] = 0
+component["y"][monster] = 4
 
 
 class Physics(component.Aspect):
   domain = {"x", "y"}
   
 class Physics2(component.Aspect):
-  domain = {"x", "y"}
+  domain = {"x", "y", "z"}
   priority = -1
 
 
