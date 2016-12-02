@@ -1,67 +1,88 @@
-#toy code
+# Entity-Component architecture based loosely on JAForbes' idea:
+# https://gist.github.com/JAForbes/99c15c0995b87a22b95a
+
+world = 0
 player = 1
 monster = 2
-wall = 3
 
 
-class BaseAspect:
-
-  def __init__(self, name, *args):
-    pass
-
-  def get_uids(self):
-    return list(set.intersection(*[set(s) for s in self.__dict__.values()]))
-
-  def remove_uid(self, uid):
-    for d in self.__dict__.values():
-      if uid in d:
-        del d[uid]
-
-  def run_process(self, process):
-    for uid in self.get_uids():
-      process(self, uid)
-
-
-class Components:
+class AspectType(type):
   
-  def __init__(self, *components):
-    self.__dict__.update({k:{} for k in components})
-    
-    cls = self
+  def __new__(cls, name, bases, namespace):
+    new_cls = super().__new__(cls, name, bases, namespace)
+    if new_cls.root:
+      new_cls.root.add_aspect(new_cls)
+    return new_cls
+
+
+class BaseAspect(metaclass=AspectType):
+  domain = {}
+  priority = 0
+  root = None
+
+  def __init__(self, *args):
+    self.__dict__.update({k:v for k, v in self.root.items() if k in args})
+
+  def setup(self):
+    print("Setting up... " + str(self))
+  
+  def start(self):
+    print("Starting... " + str(self))
+    for uid in self._get_uids():
+      self.run(uid)
+
+  def run(self, uid):
+    print("Running... " + str(self) + ": " + str(uid))
+
+  def teardown(self):
+    print("Tearing down... " + str(self))
+
+  def _get_uids(self):
+    if self.__dict__:
+      return list(set.intersection(*[set(s) for s in self.__dict__.values()]))
+    return list()
+
+
+class Components(dict):
+  def __init__(self, *args):
 
     class Aspect(BaseAspect):
+      root = self
 
-      def __init__(self, name, *args):
-        if name in cls.__dict__:
-          raise Exception("Duplicate name")
-        if not set(args).issubset(cls.__dict__):
-          raise Exception("Invalid components (do not exist)")
-        cls.__dict__[name] = self
-        self.__dict__.update({k:v for k, v in cls.__dict__.items() if k in args})
-        super().__init__(name, *args)
-
+    super().__init__()
+    self._aspects = list()
+    for arg in args:
+      self[arg] = _Entities()
     self.Aspect = Aspect
 
+  def add_aspect(self, cls):
+    self._aspects.append(cls(*cls.domain))
+    self._aspects.sort(key=lambda x: x.priority)
+
+  def run(self):
+    for aspect in self._aspects:
+      aspect.setup()
+      aspect.start()
+      aspect.teardown()
 
 
-def move_things(physics, uid):
-  physics.x[uid] += physics.vx[uid]
-  physics.y[uid] += physics.vy[uid]
+class _Entities(dict):
+  def __init__(self):
+    super().__init__()
 
 
-components = Components("x", "y", "vx", "vy")
-components.x[player], components.y[player] = 0, 0
-components.vx[player], components.vy[player] = 1, 1
-components.x[monster], components.y[monster] = 0, 0
-components.vx[monster], components.vy[monster] = -1, -1
-components.x[wall], components.y[wall] = 0, 0
+component = Components("x", "y")
+component["x"][player] = 1
+component["y"][player] = 2
+component["x"][monster] = 0
 
-components.Aspect("physics", "x", "y", "vx", "vy")
-components.Aspect("position", "x", "y")
 
-print(components.physics.__dict__)
-components.physics.run_process(move_things)
-print(components.physics.__dict__)
-del components.vy[player]
-components.physics.run_process(move_things)
-print(components.physics.__dict__)
+class Physics(component.Aspect):
+  domain = {"x", "y"}
+  
+class Physics2(component.Aspect):
+  domain = {"x", "y"}
+  priority = -1
+
+
+component.run()
