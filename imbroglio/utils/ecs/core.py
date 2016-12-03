@@ -58,8 +58,8 @@ class Components(dict):
   def __init__(self, *args):
     class Aspect(BaseAspect):
       root = self
-      super().__init__()
     
+    super().__init__()
     self._aspects = list()
     for arg in args:
       self[arg] = _Entities()
