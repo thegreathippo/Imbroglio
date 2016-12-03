@@ -8,6 +8,7 @@ monster = 2
 
 class AspectType(type):
   """Metaclass for Aspects."""
+
   def __new__(cls, name, bases, namespace):
     new_cls = super().__new__(cls, name, bases, namespace)
     if new_cls.root:
@@ -47,3 +48,54 @@ class BaseAspect(dict, metaclass=AspectType):
     if self:
       return list(set.intersection(*[set(s) for s in self.values()]))
     return list()
+
+  def __repr__(self):
+    return self.__class__.__name__ + " " + super().__repr__()
+
+  
+class Components(dict):
+
+  def __init__(self, *args):
+    class Aspect(BaseAspect):
+      root = self
+      super().__init__()
+    
+    self._aspects = list()
+    for arg in args:
+      self[arg] = _Entities()
+    self.Aspect = Aspect
+
+
+  def add_aspect(self, cls):
+    self._aspects.append(cls())
+    self._aspects.sort(key=lambda x: x.priority)
+  
+  def run(self):
+    for aspect in self._aspects:
+      aspect.process()
+
+class _Entities(dict):
+
+  def __getitem__(self, key):
+    item = super().__getitem__(key)
+    if callable(item):
+      return item()
+    return item
+
+component = Components("x", "y")
+component["x"][player] = 1
+component["y"][player] = 2
+component["x"][monster] = 0
+component["y"][monster] = 4
+
+
+class Physics(component.Aspect):
+  domain = {"x", "y"}
+
+
+class Physics2(component.Aspect):
+  domain = {"x", "y"}
+  priority = -1
+
+
+component.run()
