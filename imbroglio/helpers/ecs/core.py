@@ -1,6 +1,6 @@
 # Entity-Component architecture based loosely on JAForbes' idea:
 # https://gist.github.com/JAForbes/99c15c0995b87a22b95a
-from parser import Parser
+from .parser import Parser
 
 
 class AspectType(type):
