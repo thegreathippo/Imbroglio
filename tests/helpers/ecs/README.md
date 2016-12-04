@@ -17,5 +17,5 @@
 ###ECS Internal Tests 
 - If setup returns X, we skip the execute order (don't even bother running get_uids).
 
-
 ###ECS Error Handling
+- Raise a specific exception when you define an aspect class with a domain that contains components that don't exist.
