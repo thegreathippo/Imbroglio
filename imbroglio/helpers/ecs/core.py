@@ -1,5 +1,6 @@
 # Entity-Component architecture based loosely on JAForbes' idea:
 # https://gist.github.com/JAForbes/99c15c0995b87a22b95a
+from parser import Parser
 
 
 class AspectType(type):
@@ -55,14 +56,15 @@ class BaseAspect(dict, metaclass=AspectType):
   
 class Components(dict):
 
-  def __init__(self, *args):
+  def __init__(self, **kwargs):
+    self._default = dict(kwargs)
     class Aspect(BaseAspect):
       root = self
     
     super().__init__()
     self._aspects = list()
-    for arg in args:
-      self[arg] = _Entities()
+    for key in kwargs:
+      self[key] = _Entities()
     self.Aspect = Aspect
 
 
@@ -74,6 +76,47 @@ class Components(dict):
     for aspect in self._aspects:
       aspect.process()
 
+  def set_components(self, uid, *args, **kwargs):
+    for arg in args:
+      try:
+        value = self._default[arg]
+      except KeyError:
+        # Write better exception later
+        raise Exception("Cannot set {}; not a component".format(arg))
+      try:
+        if value.startswith("{") and value.endswith("}"):
+          parser = Parser(component=self, entity=uid)
+          self[arg][uid] = parser(value[1:-1])
+      except AttributeError:
+        self[arg][uid] = value
+    for key in kwargs:
+      try:
+        self[key]
+      except KeyError:
+        # Write better exception later
+        raise Exception("Cannot assign {0} to {1}; not a component".format(key, kwargs[key]))
+      value = kwargs[key]
+      try:
+        if value.startswith("{") and value.endswith("}"):
+          parser = Parser(component=self, entity=uid)
+          self[key][uid] = parser(value[1:-1])
+      except AttributeError:
+        self[key][uid] = value
+
+  def remove_components(self, uid, *args):
+    for arg in args:
+      try:
+        self[arg]
+      except KeyError:
+        # Write better exception later
+        raise Exception("Cannot delete {}; not a component".format(arg))
+      try:
+        del self[arg][uid]
+      except KeyError:
+        # Write better exception later
+        raise Exception("Cannot delete {}; entity doesn't exist".format(uid))
+
+
 class _Entities(dict):
 
   def __getitem__(self, key):
@@ -81,4 +124,3 @@ class _Entities(dict):
     if callable(item):
       return item()
     return item
-
