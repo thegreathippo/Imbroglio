@@ -6,8 +6,9 @@ LEFT, RIGHT = operations.LEFT, operations.RIGHT
 operators, functions = operations.operators, operations.functions
 
 class Parser:
-  def __init__(self, component_dict):
-    self._component_dict = component_dict
+  def __init__(self, **namespace):
+    """Instance a Parser object with a given namespace."""
+    self._namespace = dict(namespace)
     o_func = {k:v[0] for k, v in operators.items()}
     f_func = {k:v[0] for k, v in functions.items()}
     self.operations = {**o_func, **f_func}
@@ -16,14 +17,17 @@ class Parser:
     self._precedence = {k:v[1] for k, v in operators.items()}
     self._left = {o for o in operators if operators[o][2] == L}
     self._right = {o for o in operators if operators[o][2] == R}
-  
-  def __call__(self, text, eid=None):
+
+    class Internal(_Internal):
+      namespace = self._namespace
+
+    self.Internal = Internal
+
+  def __call__(self, text):
     """Return a function that, when called, will evaluate the supplied 
-    text as an infix expression and return the result. eid = the key for
-    the entity that this Parser instance was initialized with; the 
-    entity's associated components can be accessed via 'self.component'.
+    text as an infix expression and return the result. 
     """
-    rpn = self.rpn(text, eid)
+    rpn = self.rpn(text)
     def func():
       stack = _Stack()
       for token in rpn:
@@ -38,7 +42,7 @@ class Parser:
       return stack[0]
     return func
 
-  def rpn(self, text, eid=None):
+  def rpn(self, text):
     """Translate an infix expression (given as a string) into
     reverse polish notation (RPN) using the parser instance's
     particular operation precedence and associativity rules.
@@ -86,8 +90,9 @@ class Parser:
         elif token == ")":
             pop_parenthesis(token)
         else:
-            if token.startswith("self.") and not eid is None:
-              output.append(_Internal(token, self._component_dict, eid))
+            matching = [s for s in self._namespace if token.startswith(s)]
+            if matching:
+              output.append(self.Internal(token))
     for o in reversed(stack):
         output.append(stack.pop())
     return output
@@ -103,19 +108,25 @@ class _Stack(list):
             return self[-1]
 
 
-class _Internal:
-    def __init__(self, path, c_dict, eid):
-        _path = path.split(".")
-        self.key = _path[1]
-        self.path = _path[2:]
-        self._dict = c_dict
-        self._eid = eid
 
-    def __call__(self):
-        value = self._dict[self.key][self._eid]
-        for step in self.path:
+class _Internal:
+  namespace = dict()
+
+  def __init__(self, path):
+      _path = path.split(".")
+      self.root = _path[0]
+      self.path = _path[1:]
+
+  def __call__(self):
+      value = self.namespace[self.root]
+      for step in self.path:
+        if step in self.namespace:
+          step = self.namespace[step]
+        try:
           value = getattr(value, step)
-        return value
+        except (AttributeError, TypeError):
+          value = value[step]
+      return value
 
 
 def _is_int(token):
