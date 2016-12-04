@@ -18,6 +18,11 @@ class Parser:
     self._right = {o for o in operators if operators[o][2] == R}
   
   def __call__(self, text, eid=None):
+    """Return a function that, when called, will evaluate the supplied 
+    text as an infix expression and return the result. eid = the key for
+    the entity that this Parser instance was initialized with; the 
+    entity's associated components can be accessed via 'self.component'.
+    """
     rpn = self.rpn(text, eid)
     def func():
       stack = _Stack()
