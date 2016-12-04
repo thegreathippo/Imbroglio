@@ -12,11 +12,11 @@ method of Aspect instances.
 Attributes:
 	OPEN_FORMULA (str): When setting string values to an entity's 
 	  component, any string which begins with this value (and 
-		ends with CLOSE_FORMULA) will be treated as a formula.
+	  ends with CLOSE_FORMULA) will be treated as a formula.
 
 	CLOSE_FORMULA (str): When setting string values to an entity's
 	  component, any string which ends with this value (and 
-		begins with OPEN_FORMULA) will be treated as a formula.
+	  begins with OPEN_FORMULA) will be treated as a formula.
 
 TODO:
   * More precise error handling.
@@ -25,11 +25,11 @@ TODO:
   * Clean up terminology.
     * Entities/uids shouldn't be interchangeable; pick one (prolly 
       entities).
-	* Templating system (?)
-	* A type of domain that auto-cycles through all entities (?)
-	* Should be a way to create entities via aspects rather than via 
-	  components.
-	* Entities should also be removable via aspects.
+  * Templating system (?)
+  * A type of domain that auto-cycles through all entities (?)
+  * Should be a way to create entities via aspects rather than via 
+    components.
+  * Entities should also be removable via aspects.
 """
 from aspects import BaseAspect
 from entities import Entities, EntityHandler
