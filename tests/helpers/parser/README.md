@@ -8,8 +8,6 @@
     - ~~For complex (nested parenthetical) equations.~~
     - ~~For equations including floats.~~
 - ~~When instanced with a dictionary (d) and integer (i), variables (v) will be retrieved from the dictionary: d[v][i]~~
-  - We may actually adjust this later, to make Parser more general purpose.
-- Do our internal 'custom' pointer-like objects (```_Internal```) carry a risk of allowing references to live on after they should be garbage-collected? We need to create a test to determine this (will be tricky).
 
 ###Parser Joint Tests
 
