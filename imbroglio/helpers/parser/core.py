@@ -5,6 +5,7 @@ L, R = operations.L, operations.R
 LEFT, RIGHT = operations.LEFT, operations.RIGHT
 operators, functions = operations.operators, operations.functions
 
+
 class Parser:
   def __init__(self, **namespace):
     """Instance a Parser object with a given namespace."""
@@ -108,7 +109,6 @@ class _Stack(list):
             return self[-1]
 
 
-
 class _Internal:
   namespace = dict()
 
@@ -128,14 +128,12 @@ class _Internal:
           value = value[step]
       return value
 
-
 def _is_int(token):
     try:
         int(token)
         return True
     except ValueError:
         return False
-
 
 def _is_float(token):
     try:
@@ -151,4 +149,3 @@ def _format(operators, text):
     pattern = pattern[:i] + "\\" + pattern[i:]
   raw = re.split(pattern, text)
   return [e for e in raw if e != " " and e != ""]
-
