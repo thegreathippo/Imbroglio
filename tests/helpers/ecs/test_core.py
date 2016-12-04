@@ -4,7 +4,7 @@ from ...imbroglio.helpers.ecs import Components
 
 class CoreComponentTest(unittest.TestCase):
   def setUp(self):
-    self.component = Components(x=0, y=0, z=0, w="{component.x.entity + component.y.entity}")
+    self.component = Components(x=0, y=0, z=0, w="{entity.x + entity.y}")
 
   def test_set_component_value_on_entity(self):
     """Test to ensure Component.set_components allows you to
@@ -45,7 +45,7 @@ class CoreComponentTest(unittest.TestCase):
     a formula to an entity's component value.
     """
     entity = 0
-    self.component.set_components(entity, x=1, y=2, w="{component.x.entity + component.y.entity}")
+    self.component.set_components(entity, x=1, y=2, w="{entity.x + entity.y}")
     self.assertEqual(self.component["w"][entity], 3)
 
   def test_aspect_priority(self):
