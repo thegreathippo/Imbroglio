@@ -1,5 +1,5 @@
 import unittest
-from ..helpers.ecs import Components
+from ...imbroglio.helpers.ecs import Components
 
 
 class CoreComponentTest(unittest.TestCase):
