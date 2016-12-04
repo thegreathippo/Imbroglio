@@ -4,7 +4,49 @@ from ...imbroglio.helpers.ecs import Components
 
 class CoreComponentTest(unittest.TestCase):
   def setUp(self):
-    self.component = Components("x", "y", "z")
+    self.component = Components(x=0, y=0, z=0, w="{component.x.entity + component.y.entity}")
+
+  def test_set_component_value_on_entity(self):
+    """Test to ensure Component.set_components allows you to
+    assign a component's value to an entity.
+    """
+    entity = 0
+    self.component.set_components(entity, x=1)
+    self.assertEqual(self.component["x"][entity], 1)
+
+  def test_set_component_on_entity(self):
+    """Test to ensure Component.set_components allows you to 
+    add a component to an entity (setting it to the component's
+    default value).
+    """
+    entity = 0
+    self.component.set_components(entity, "x")
+    self.assertEqual(self.component["x"][entity], 0)
+
+  def test_set_component_and_component_value_on_entity(self):
+    """Test to ensure Component.set_components allows you to both
+    assign a component value and add a component to an entity.
+    """
+    entity = 0
+    self.component.set_components(entity, "x", y=1)
+    self.assertEqual(self.component["x"][entity], 0)
+    self.assertEqual(self.component["y"][entity], 1)
+
+  def test_set_component_formula_on_entity(self):
+    """Test to ensure Component.set_components allows you to activate 
+    a component's default value on an entity when that value is a formula.
+    """
+    entity = 0
+    self.component.set_components(entity, "w", x=1, y=2)
+    self.assertEqual(self.component["w"][entity], 3)
+
+  def test_set_component_value_on_entity_to_formula(self):
+    """Test to ensure Component.set_components allows you to assign assign
+    a formula to an entity's component value.
+    """
+    entity = 0
+    self.component.set_components(entity, x=1, y=2, w="{component.x.entity + component.y.entity}")
+    self.assertEqual(self.component["w"][entity], 3)
 
   def test_aspect_priority(self):
     """Test to ensure priority class variable determines order of
@@ -56,8 +98,8 @@ class CoreComponentTest(unittest.TestCase):
       def teardown(self):
         test_list.append("teardown")
       
-    self.component["x"][entity_1] = 10
-    self.component["x"][entity_2] = 11
+    self.component.set_components(entity_1, x=10)
+    self.component.set_components(entity_2, x=11)
     self.component.run()
     self.assertEqual(["startup", "setup", "run", "run", "teardown"], test_list)
 
@@ -100,9 +142,9 @@ class CoreComponentTest(unittest.TestCase):
       def run(self, uid):
         test_list.append("executed")
     
-    self.component["x"][entity] = 0
+    self.component.set_components(entity, x=0)
     self.component.run()
-    del self.component["x"][entity]
+    self.component.remove_components(entity, "x")
     self.component.run()
     self.assertEqual(["executed"], test_list)
 
@@ -121,14 +163,14 @@ class CoreComponentTest(unittest.TestCase):
       
       def run(self, uid):
         test_list.append(uid)
-    
-    self.component["x"][entity_1] = 0
-    self.component["y"][entity_1] = 0
-    self.component["x"][entity_2] = 0
+
+    self.component.set_components(entity_1, x=0, y=0)
+    self.component.set_components(entity_2, x=0)
     self.component.run()
-    del self.component["x"][0]
-    self.component["y"][entity_2] = 0
+    self.component.remove_components(entity_1, "x")
+    self.component.set_components(entity_2, y=0)
     self.component.run()
     self.assertEqual([entity_1, entity_2], test_list)
+
 
 unittest.main()
