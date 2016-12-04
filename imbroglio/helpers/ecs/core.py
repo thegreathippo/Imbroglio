@@ -96,6 +96,9 @@ class Components(dict):
   def run(self):
     """Run each of the Component instance's aspects (processes) once, 
     in order.
+    
+    Returns:
+      None
     """
     for aspect in self._aspects:
       aspect.process()
@@ -120,6 +123,9 @@ class Components(dict):
       **kwargs: Components to values; these components will be set to 
         the given value for the entity. Raises an exception if any of 
         kwargs' keys are not in the Components instance.
+
+    Returns:
+      None
     """
     if not set(args).issubset(self) or not set(kwargs).issubset(self):
       invalid = set(kwargs).difference(self).union(set(args).difference(self))
@@ -146,6 +152,9 @@ class Components(dict):
         these strings are not in the Components instance; also raises 
         an exception if uid is not associated with any of these 
         components.
+
+    Returns:
+      None
     """
     for arg in args:
       try:
