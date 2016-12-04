@@ -1,5 +1,5 @@
 # Imbroglio
-A data-driven roguelike engine.
+A data-driven roguelike engine that uses an entity-component system.
 
 
 ## Important Links
