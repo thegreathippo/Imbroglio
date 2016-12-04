@@ -8,4 +8,5 @@
   - If so, we might make this component/aspect generated in the Components class.
 - Templating system (?).
   - Is it separate? Or part of ECS? A helper?
+##QUESTIONS
 - Should the entities dictionaries 'know' the component dictionaries they're part of? Why?
