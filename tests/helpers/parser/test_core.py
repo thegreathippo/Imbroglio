@@ -1,5 +1,5 @@
 import unittest
-from parser import Parser
+from ...helpers.parser import Parser
 
 # Simple test.
 test1_inf = "(12 - 3 ) / 3^2 + 2 * 3"
