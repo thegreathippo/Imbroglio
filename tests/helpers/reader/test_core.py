@@ -5,7 +5,7 @@ from ...imbroglio.helper.reader import load_components
 class CoreComponentTest(unittest.TestCase):
   def setUp(self):
     self.entity = 0
-    self.component = load_components("components.dat")
+    self.component = load_components("test_components_file.dat")
 
   def test_component_default_values(self):
     self.component.set_components(self.entity, "strength")
