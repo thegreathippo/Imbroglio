@@ -7,7 +7,7 @@ TODO:
   * Test entity attribute assignment.
 """
 import unittest
-from ecs import Components
+from ...imbroglio.helpers.ecs import Components
 
 
 class CoreComponentTest(unittest.TestCase):
