@@ -30,6 +30,9 @@ class BaseEntities(dict):
     if callable(item):
       return item()
     return item
+  
+  def __repr__(self):
+    return type(self).__name__ + " " + super().__repr__()
 
 
 class BaseEntity:
