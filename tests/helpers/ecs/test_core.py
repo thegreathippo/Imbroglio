@@ -5,6 +5,11 @@ TODO:
     * Ensure entity equality doesn't cross over.
   * Test entity equality.
   * Test entity attribute assignment.
+  * Test manual component entry (via dict access)
+  * Test different value type assignments...
+    * String
+    * Float
+    * Int
 """
 import unittest
 from ...imbroglio.helpers.ecs import Components
@@ -13,6 +18,22 @@ from ...imbroglio.helpers.ecs import Components
 class CoreComponentTest(unittest.TestCase):
   def setUp(self):
     self.component = Components(x=0, y=0, z=0, w="{entity.x + entity.y}")
+
+  def test_manual_formula_setting(self):
+    entity = 10
+    self.component["x"][entity] = 10
+    self.component["w"][entity] = "{entity.x + entity.x}"
+    self.assertEqual(self.component["w"][entity], 20)
+
+  def test_modifier(self):
+    entity = 10
+    self.component["x"][entity] = 10
+
+    def plus_one(val):
+      return val + 1
+
+    self.component.modifiers["x"][entity].add_modifier(plus_one)
+    self.assertEqual(self.component["x"][entity], 11)
 
   def test_set_component_value_on_entity(self):
     """Test to ensure Component.set_components allows you to
