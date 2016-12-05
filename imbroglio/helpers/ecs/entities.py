@@ -8,7 +8,22 @@ interface to retrieve an entity's components via attribute access
 TODO:
   * None, as of now (?)
 """
-class Entities(dict):
+from modifiers import Modifiers
+
+class BaseEntities(dict):
+  root = None
+
+  def __init__(self, name):
+    super().__init__()
+    self._name = name
+
+  def __setitem__(self, key, value):
+    modifiers = Modifiers(key, value, self.root)
+    if self._name in self.root.modifiers:
+      self.root.modifiers[self._name][key] = modifiers
+    else:
+      self.root.modifiers[self._name] = {key: modifiers}
+    super().__setitem__(key, modifiers)
 
   def __getitem__(self, key):
     item = super().__getitem__(key)
