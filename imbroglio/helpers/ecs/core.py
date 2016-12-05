@@ -1,23 +1,18 @@
 """Core module for Imbroglio's ecs (Entity Component architecture).
-
 Based loosely on JAForbes' idea: 
 https://gist.github.com/JAForbes/99c15c0995b87a22b95a
-
 This module provides access to the Components class, which inherits from
 Python 3.x's dict class. Instances of this class can be used to generate
 new components, assign them (and their values) to entities, instance 
 Aspect classes (automatically via inheritance), and run the process 
 method of Aspect instances.
-
 Attributes:
 	OPEN_FORMULA (str): When setting string values to an entity's 
 	  component, any string which begins with this value (and 
 	  ends with CLOSE_FORMULA) will be treated as a formula.
-
 	CLOSE_FORMULA (str): When setting string values to an entity's
 	  component, any string which ends with this value (and 
 	  begins with OPEN_FORMULA) will be treated as a formula.
-
 TODO:
   * More precise error handling.
     * Specifically: Components.remove_components should tell us which 
@@ -32,8 +27,8 @@ TODO:
   * Entities should also be removable via aspects.
 """
 from aspects import BaseAspect
-from entities import Entities, EntityHandler
-from .parser import Parser
+from entities import Entities, BaseEntity
+from parser import Parser
 
 OPEN_FORMULA, CLOSE_FORMULA = "{", "}"
 
@@ -66,21 +61,23 @@ class Components(dict):
 
     class Aspect(BaseAspect):
       root = self
+    
+    class Entity(BaseEntity):
+      root = self
 
     super().__init__()
     self._aspects = list()
     for key in kwargs:
       self[key] = Entities()
     self.Aspect = Aspect
+    self.Entity = Entity
 
   def add_aspect(self, cls):
     """Instance a class and add it as an aspect to the Components 
     instance.
-
     Note:
       Unless you know what you're doing, you shouldn't call this method; 
       it's primarily for internal use by Components itself.
-
     Args:
       cls: The class to be instanced and added to Components._aspects. 
         Classes used for this purpose should have a process method (one 
@@ -105,7 +102,6 @@ class Components(dict):
 
   def set_components(self, uid, *args, **kwargs):
     """Set the values of one or more components for an entity.
-
     Note:
       Any component set as a string enclosed in OPEN_FORMULA and
       CLOSE_FORMULA will be treated as a formula. The string will be 
@@ -113,7 +109,6 @@ class Components(dict):
       whenever this component's value is retrieved.
       
       For more information, see the parser.core.py module.
-
     Args:
       uid (any hashable value): The entity for which these components 
         will be defined.
@@ -123,7 +118,6 @@ class Components(dict):
       **kwargs: Components to values; these components will be set to 
         the given value for the entity. Raises an exception if any of 
         kwargs' keys are not in the Components instance.
-
     Returns:
       None
     """
@@ -135,9 +129,11 @@ class Components(dict):
       value = kwargs.get(comp_name, self._default[comp_name])
       try:
         if value.startswith(OPEN_FORMULA) and value.endswith(CLOSE_FORMULA):
-          handler = EntityHandler(uid, self)
+          handler = self.Entity(uid)
           parser = Parser(component=self, entity=handler)
           self[comp_name][uid] = parser(value[1:-1])
+        else:
+          self[comp_name][uid] = value
       except AttributeError:
         self[comp_name][uid] = value
 
@@ -152,7 +148,6 @@ class Components(dict):
         these strings are not in the Components instance; also raises 
         an exception if uid is not associated with any of these 
         components.
-
     Returns:
       None
     """
