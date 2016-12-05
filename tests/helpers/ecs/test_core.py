@@ -1,5 +1,13 @@
+"""
+TODO:
+  * Break this apart (core, aspects, entities?) into smaller tests.
+  * Test for concurrent component instances...
+    * Ensure entity equality doesn't cross over.
+  * Test entity equality.
+  * Test entity attribute assignment.
+"""
 import unittest
-from ...imbroglio.helpers.ecs import Components
+from ecs import Components
 
 
 class CoreComponentTest(unittest.TestCase):
@@ -92,7 +100,7 @@ class CoreComponentTest(unittest.TestCase):
       def setup(self):
         test_list.append("setup")
       
-      def run(self, uid):
+      def run(self, entity):
         test_list.append("run")
       
       def teardown(self):
@@ -119,7 +127,7 @@ class CoreComponentTest(unittest.TestCase):
       def setup(self):
         test_list.append("setup")
       
-      def run(self, uid):
+      def run(self, entity):
         test_list.append("run")
       
       def teardown(self):
@@ -139,7 +147,7 @@ class CoreComponentTest(unittest.TestCase):
     class AspectX(self.component.Aspect):
       domain = {"x"}
       
-      def run(self, uid):
+      def run(self, entity):
         test_list.append("executed")
     
     self.component.set_components(entity, x=0)
@@ -161,8 +169,8 @@ class CoreComponentTest(unittest.TestCase):
     class AspectXY(self.component.Aspect):
       domain = {"x", "y"}
       
-      def run(self, uid):
-        test_list.append(uid)
+      def run(self, entity):
+        test_list.append(entity.get_uid())
 
     self.component.set_components(entity_1, x=0, y=0)
     self.component.set_components(entity_2, x=0)
