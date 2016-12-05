@@ -6,13 +6,7 @@ Python 3.x's dict class. Instances of this class can be used to generate
 new components, assign them (and their values) to entities, instance 
 Aspect classes (automatically via inheritance), and run the process 
 method of Aspect instances.
-Attributes:
-	OPEN_FORMULA (str): When setting string values to an entity's 
-	  component, any string which begins with this value (and 
-	  ends with CLOSE_FORMULA) will be treated as a formula.
-	CLOSE_FORMULA (str): When setting string values to an entity's
-	  component, any string which ends with this value (and 
-	  begins with OPEN_FORMULA) will be treated as a formula.
+
 TODO:
   * More precise error handling.
     * Specifically: Components.remove_components should tell us which 
@@ -25,12 +19,11 @@ TODO:
   * Should be a way to create entities via aspects rather than via 
     components.
   * Entities should also be removable via aspects.
+  * Update documentation to reflect move from parser at top-level top-level
+    to bottom-level (modifiers)
 """
 from aspects import BaseAspect
-from entities import Entities, BaseEntity
-from .parser import Parser
-
-OPEN_FORMULA, CLOSE_FORMULA = "{", "}"
+from entities import BaseEntities, BaseEntity
 
 
 class Components(dict):
@@ -65,10 +58,14 @@ class Components(dict):
     class Entity(BaseEntity):
       root = self
 
+    class Entities(BaseEntities):
+      root = self
+    
     super().__init__()
     self._aspects = list()
+    self.modifiers = dict()
     for key in kwargs:
-      self[key] = Entities()
+      self[key] = Entities(key)
     self.Aspect = Aspect
     self.Entity = Entity
 
@@ -127,15 +124,7 @@ class Components(dict):
       raise Exception("Cannot set {}; not components".format(invalid))
     for comp_name in set(args).union(kwargs):
       value = kwargs.get(comp_name, self._default[comp_name])
-      try:
-        if value.startswith(OPEN_FORMULA) and value.endswith(CLOSE_FORMULA):
-          handler = self.Entity(uid)
-          parser = Parser(component=self, entity=handler)
-          self[comp_name][uid] = parser(value[1:-1])
-        else:
-          self[comp_name][uid] = value
-      except AttributeError:
-        self[comp_name][uid] = value
+      self[comp_name][uid] = value
 
   def remove_components(self, uid, *args):
     """Remove one or more components from a given entity.
