@@ -28,7 +28,7 @@ TODO:
 """
 from aspects import BaseAspect
 from entities import Entities, BaseEntity
-from parser import Parser
+from .parser import Parser
 
 OPEN_FORMULA, CLOSE_FORMULA = "{", "}"
 
