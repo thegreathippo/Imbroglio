@@ -1,21 +1,38 @@
-"""Core module for Imbroglio's ecs (Entity Component architecture).
-Based loosely on JAForbes' idea: 
+"""
+Core module for Imbroglio's ecs (Entity Component architecture). Based 
+loosely on JAForbes' idea: 
+
 https://gist.github.com/JAForbes/99c15c0995b87a22b95a
-This module provides access to the Components class, which inherits from
-Python 3.x's dict class. Instances of this class can be used to generate
-new components, assign them (and their values) to entities, instance 
-Aspect classes (automatically via inheritance), and run the process 
-method of Aspect instances.
+
+This module provides access to the Components class; a custom Python 
+dict. Instances of this class can be used to generate new components, 
+assign them (and their values) to entities, register new processes, and 
+add (or remove) modifiers to an entity's component.
+
+Samples:
+
+>>> player = 1
+>>> component = Components(x=1, y=2)
+>>> component.set_components(player, "x", "y")
+>>> component["x"][player]
+> 1
+>>> component["y"][player]
+> 2
+
 
 TODO:
+  * Change 'Aspect' class to 'Process'.
+  * Make 'add_aspect' into 'register_process'; set it up so it can take 
+    arbitrary functions with kwargs (and the Process instancing just does 
+    this automatically for you).
+  * Change 'run' (in Process classes) to '__call__'
+  * Move '_get_uids' to Components? Just performs a set intersection on
+    a group of given components? 
+  * 'setup', etc -- these methods are accessed via Components in a try
+    except block.
   * More precise error handling.
     * Specifically: Components.remove_components should tell us which 
       components did not contain the given uid.
-  * Clean up terminology.
-    * Entities/uids shouldn't be interchangeable; pick one (prolly 
-      entities).
-  * Templating system (?)
-  * A type of domain that auto-cycles through all entities (?)
   * Should be a way to create entities via aspects rather than via 
     components.
   * Entities should also be removable via aspects.
