@@ -1,9 +1,7 @@
 """Aspect module for Imbroglio's ecs (Entity Component architecture).
-
 This module provides access to the BaseAspect class, which inherits from
 Python 3.x's dict class. BaseAspect is imported by ecs.core.py, where it 
 is included as an attribute in instances of the Components class.
-
 TODO:
   * Better (more descriptive) exceptions.
   * Better terminology (swap out uids for entities?).
@@ -27,7 +25,6 @@ class _AspectType(type):
 
 class BaseAspect(dict, metaclass=_AspectType):
   """Base class for Aspects.
-
   Inherits from Python 3.x's dict class, while providing some additional
   functionality.
   
@@ -69,10 +66,10 @@ class BaseAspect(dict, metaclass=_AspectType):
     """
     self.setup()
     for uid in self._get_uids():
-      self.run(uid)
+      self.run(self.root.Entity(uid))
     self.teardown()
 
-  def run(self, uid):
+  def run(self, entity):
     """Process a single entity that intersects with this Aspect 
     instance's domain (it is associated with all the components in the 
     Aspect's domain).
@@ -89,4 +86,3 @@ class BaseAspect(dict, metaclass=_AspectType):
 
   def __repr__(self):
     return self.__class__.__name__ + " " + super().__repr__()
-
