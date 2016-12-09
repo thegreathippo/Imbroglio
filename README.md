@@ -23,9 +23,13 @@ imbroglio's System class creates a custom dictionary that tracks which component
 This way, imbroglio doesn't need to iterate over every entity to determine if they have the correct components; rather, it goes straight to the component and begins iterating over the relevant entities.
 
 The disadvantage of this approach is that referring to an entity's components becomes cumbersome and counter-intuitive. Rather than this...
+
 ``entities["player"]["x"]``
+
 ...we need to do this:
+
 ``components["x"]["player"]``
+
 Much of imbroglio's 'magic' is dedicated to maintaining the computational advantages of the second approach while providing the intuitiveness of the first approach.
 
 In addition to this, imbroglio offers a way to store an entity's component-value as a formula (similar to Python's @property decorator, or custom __get__ descriptors), and a way to define 'modifer-types' which can (temporarily) modify a component's value.
