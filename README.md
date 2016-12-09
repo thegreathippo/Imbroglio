@@ -24,11 +24,11 @@ This way, imbroglio doesn't need to iterate over every entity to determine if th
 
 The disadvantage of this approach is that referring to an entity's components becomes cumbersome and counter-intuitive. Rather than this...
 
-``entities["player"]["x"]``
+``entity.x``
 
 ...we need to do this:
 
-``components["x"]["player"]``
+``components["x"][entity]``
 
 Much of imbroglio's 'magic' is dedicated to maintaining the computational advantages of the second approach while providing the intuitiveness of the first approach.
 
