@@ -1,3 +1,6 @@
+"""
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+"""
 class _BaseModTypeType(type):
   def __new__(cls, name, bases, namespace):
     new_cls = super().__new__(cls, name, bases, namespace)
