@@ -1,3 +1,6 @@
+"""
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+"""
 from parser import Parser
 
 OPEN, CLOSE = "{", "}"
@@ -41,8 +44,8 @@ class BaseValue:
     if attr in self._modifiers:
       return self._modifiers[attr]
     else:
-      if attr in self.root._modtypes:
-        modifier = self.root._modtypes[attr]()
+      if attr in self.root.modtypes:
+        modifier = self.root.modtypes[attr]()
         self._modifiers[attr] = modifier
         return modifier
     super().__getattribute__(attr)
