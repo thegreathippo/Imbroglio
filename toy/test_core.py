@@ -11,6 +11,7 @@ from ecs import System
 
 
 class CoreEntityTest(unittest.TestCase):
+
   def setUp(self):
     self.x, self.y, self.z = 1, 2, 3
     self.w = self.x + self.y
@@ -19,7 +20,7 @@ class CoreEntityTest(unittest.TestCase):
     self.entity = self.system.Entity(x=None, y=None, z=None, w=None)
     self._died = False
 
-    class MagicMod(self.system.ModType):
+    class GenericMod(self.system.ModType):
       pass
 
   def test_defaults(self):
@@ -56,14 +57,18 @@ class CoreEntityTest(unittest.TestCase):
 
   def test_entity_add_modifier(self):
     """Adding a modifier changes the entity's component's output value."""
-    self.entity["x"].MagicMod.add(2)
+    self.entity["x"].GenericMod.add(2)
     self.assertEqual(self.entity.x, self.x + 2)
+    # Check to ensure base still remains the same.
     self.assertEqual(self.entity["x"].base, self.x)
+    self.entity["x"].base = 0
+    # Modifying the base should change the output without changing the mod.
+    self.assertEqual(self.entity.x, 2)
 
   def test_entity_remove_modifier(self):
     """Removing a modifier reverts the entity's component's output value."""
-    magicmod = self.entity["x"].MagicMod.add(2)
-    self.entity["x"].MagicMod.remove(magicmod)
+    mod = self.entity["x"].GenericMod.add(2)
+    self.entity["x"].GenericMod.remove(mod)
     self.assertEqual(self.entity.x, self.x)
 
   def test_entity_equivalence(self):
