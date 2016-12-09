@@ -21,7 +21,7 @@ class Parser:
     self._right = {o for o in operators if operators[o][2] == R}
 
     class Internal(_Internal):
-      namespace = self._namespace
+      namespace = dict(self._namespace)
 
     self.Internal = Internal
 
