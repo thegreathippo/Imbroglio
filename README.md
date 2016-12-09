@@ -1,5 +1,5 @@
 # Imbroglio
-`imbroglio` is an entity-component system designed for numerous objects (entities) that may or may not have certain attributes (components) to be manipulated by independent systems (processes) based on which objects have which attributes.
+`imbroglio` is an entity-component system designed to manipulate numerous objects (entities) with certain attributes (components) via independent systems (processes) which select which objects to manipulate based on whether or not an object has attributes relevant to that system.
 
 ## Overview
 `imbroglio`'s `System` class creates a custom dictionary that tracks which component values are associated with which entities (which are associated with which values). In other words, rather than storing components like this...
