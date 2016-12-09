@@ -30,7 +30,7 @@ The disadvantage of this approach is that referring to an entity's components be
 
 `components["x"][entity]`
 
-Much of imbroglio's 'magic' is dedicated to maintaining the computational advantages of the second approach while providing the intuitiveness of the first approach.
+Much of imbroglio's 'magic' is dedicated to maintaining the computational advantages of the second approach while providing the intuitiveness of the first approach (without storing extra data, and without creating cyclical references).
 
 In addition to this, imbroglio offers a way to store an entity's component-value as a formula (similar to Python's @property decorator, or custom __get__ descriptors), and a way to define 'modifer-types' which can (temporarily) modify a component's value.
 
