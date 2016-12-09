@@ -5,18 +5,23 @@ imbroglio is an entity-component system designed for numerous objects (entities)
 imbroglio's System class creates a custom dictionary that tracks which component values are associated with which entities (which are associated with which values). In other words, rather than storing components like this...
 
 ~~~~
-{"player" : 
-    {"x" : 5, 
-     "y" : 6}, 
+{"player": 
+    {"x": 5, 
+     "y": 6}, 
  "monster": 
-    {"x" : 7, 
+    {"x": 7, 
      "y": 9}}
 ~~~~
 
 ...imbroglio stores components like this:
-
-``{"x" : {"player" : 5, "monster" : 7}, "y" : {"player" : 6, "monster" : 9}}``
-
+~~~~
+{"x": 
+    {"player": 5, 
+     "monster": 7}, 
+ "y": 
+    {"player": 6, 
+     "monster": 9}}
+~~~~
 This way, imbroglio doesn't need to iterate over every entity to determine if they have the correct components; rather, it goes straight to the component and begins iterating over the relevant entities.
 
 The disadvantage of this approach is that referring to an entity's components becomes cumbersome and counter-intuitive. Rather than this...
