@@ -43,3 +43,11 @@
     - (You'll probably want to do this BEFORE you start editing the Parser).
 
 ## Error Handling
+- At some point, describe (via documentation) our philosophy of error handling:
+  - If something will cause an error eventually -- but not yet -- do it, _then_ raise the exception.
+  - This way, it's possible to bypass the exception (but simultaneously, we protect from absurd behavior)
+  - Example to use: Noncallable processes and noncallable hooks.
+- Noncallable Process should raise an exception.
+  - (So should all hooks if they are not callable!)
+  - (But this should be done at the end; do all the operations, then raise the exception -- so we can bypass the exception if for some reason we want non-callable hooks)
+    
