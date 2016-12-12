@@ -22,6 +22,8 @@
       - Could have a method access this instead (`System.entity`) and keep it private (`System._entity_cls`).
     - ModType
       - Offered so you can subclass ModTypes. Might handle this like Process, might not, depends on how we decide user interface for modifiers will ultimately work.
+- Process
+  - Documentation
 - Parser
   - Institute variable function argument number code
     - Operations (operators and functions) define how many values they want.
@@ -29,7 +31,7 @@
   - Institute tuple returns (commas outside of parenthesis)
     - You might use the arg_counter function you wrote for this; might use it for the above, too!
   - Documentation
-    
+
 ## Unit Testing
 - Modifiers
   - Test Modifier persistence?
