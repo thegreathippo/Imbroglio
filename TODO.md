@@ -1,15 +1,29 @@
 # TODO
 
 ## General
-* Change entity keyword to constant
- * In both the unit test and the primary code, we should make it so that instead of loading 'entity' into the namespace of our parser, we load a constant (which we can therefore change later if we prefer).
-* Simplifying/Documenting Modifier types and how they work.
- * Modifer types: Additive, Multiplicative, Function?
- * This means breaking modifiers down into more precise types to make them easier to understand and deploy.
- * We might encounter some problems regarding how multipliers are 'handled' (how they work when multiple multipliers of the same type are present), but we could have the 'function' type handle all of these weirder cases? Or not?
- * Another direction to think about: Making the broad Modifier types, and making the name defined in the class become part of the modifier itself... creating new lists within the modifier type for each name (so, `AdditiveMod("magic", 2)` creates an internal list (`._mods = {"magic" : list()}`) -- this could be potentially very confusing, though!
-* Entity Destruction? Removal of all components from an entity?
-* Investigate ways to move the System instance's class attributes (Value, Entity, etc) out of sight without just making them private? And still provide access to the lower level instances where needed? Allowing us to access 'Entity' via a method instead of directly instancing the class?
-
+- ENTITIES
+  - Change entity keyword (passed to parser) to constant. Remember: You'll have to update the unitcode to reflect this, too!
+    - Which reminds me: config.py to store important constants!
+  - Entity Destruction? Removal of all components from an entity?
+- MODIFIERS
+  - Simplify/Document Modifier types and how they work.
+    - Modifier types: Additive, Multiplicative, Function?
+    - Define how I want users to add a modifier (and remove a modifier), then create the code to support that useage.
+- SYSTEM
+  - Attributes to system instances which are classes...
+    - Value
+      - Shouldn't be offered so publicly; only provided because downstream classes need it.
+    - Process
+      - Must be public, because of automatic process registration (via inheritance)
+    - Entity
+      - Could have a method access this instead (`System.entity`) and keep it private (`System._entity_cls`).
+    - ModType
+      - Offered so you can subclass ModTypes. Might handle this like Process, might not, depends on how we decide user interface for modifiers will ultimately work.
+    
+## Unit Testing
+- Modifiers
+  - Test Modifier persistence?
+- Entities
+  - When a component is set to None, its value should become the default for that entity
 
 ## Error Handling
