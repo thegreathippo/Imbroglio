@@ -1,9 +1,10 @@
 # TODO
 
 ## General
+- OVERALL
+  - config.py to store important constants
 - ENTITIES
-  - Change entity keyword (passed to parser) to constant. Remember: You'll have to update the unitcode to reflect this, too!
-    - Which reminds me: config.py to store important constants!
+  - Change entity keyword (passed to parser) to constant. Remember: You'll have to update the unitcode to reflect this, too! (use config.py)
   - Entity Destruction? Removal of all components from an entity?
 - MODIFIERS
   - Simplify/Document Modifier types and how they work.
