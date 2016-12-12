@@ -6,6 +6,11 @@
 - Entities
   - Change entity keyword (passed to parser) to constant. Remember: You'll have to update the unitcode to reflect this, too! (use config.py)
   - Entity Destruction? Removal of all components from an entity?
+  - Hide `System.Entity` (`System._entity_cls`). Make access to it limited to a method (`System.entity`).
+    - If provided with an eid (or an entity instance), this method will return _that_ entity.
+    - Otherwise, it returns a new entity.
+      - This means we can clear out the code in BaseEntity that grabs the eid (might keep it just for redundancy, though -- add a comment mentioning it's there purely for redundancy's sake?).
+    - Keyword arguments are assigned to either the old entity or the new entity as appropriate.
   - Documentation
 - Modifiers
   - Simplify/Document Modifier types and how they work.
