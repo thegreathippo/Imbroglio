@@ -28,6 +28,9 @@
     - ModType
       - Offered so you can subclass ModTypes. Might handle this like Process, might not, depends on how we decide user interface for modifiers will ultimately work.
 - Process
+  - Edit `_ProcessType` to check for `root` attribute on class before checking to see if it's None.
+    - Should we raise an error if it's not there? Or just let it go?
+    - If you're this deep into it, I feel like we should just let it go. We check to AVOID an error, after all.
   - Documentation
 - Parser
   - Institute variable function argument number code
