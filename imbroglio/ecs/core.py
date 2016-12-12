@@ -23,10 +23,10 @@ Example:
   > 1
 """
 
-from entities import ComponentDict, BaseEntity
-from modifiers import BaseModifierType
-from values import BaseValue
-from processes import BaseProcess
+from .entities import ComponentDict, BaseEntity
+from .modifiers import BaseModifierType
+from .values import BaseValue
+from .processes import BaseProcess
 
 def _empty():
   pass

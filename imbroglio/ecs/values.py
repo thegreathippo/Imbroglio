@@ -1,7 +1,7 @@
 """
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """
-from parser import Parser
+from .parser import Parser
 
 OPEN, CLOSE = "{", "}"
 

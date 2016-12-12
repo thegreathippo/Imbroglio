@@ -8,7 +8,7 @@ TODO:
   * When adding an attribute to an entity as None, default value?
 """
 import unittest
-from .ecs import System
+from ecs import System
 
 
 class CoreRegisteredProcessTest(unittest.TestCase):
@@ -302,6 +302,4 @@ class CoreEntityTest(unittest.TestCase):
     self.assertNotEqual(entity.w, self.entity.w)
 
 
-
-unittest.main()
 
