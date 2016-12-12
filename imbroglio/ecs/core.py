@@ -21,10 +21,6 @@ Example:
   >>> world.step()
   >>> player.x
   > 1
-
-TODO:
-  * More precise error handling.
-  * Method to destroy entities? 
 """
 
 from entities import ComponentDict, BaseEntity
