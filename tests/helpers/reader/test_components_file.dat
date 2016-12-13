@@ -1,3 +1,0 @@
-str_super_bonus = {(entity.str_bonus + entity.strength)}
-strength = 14
-str_bonus = {(entity.strength - 10) / 2}
