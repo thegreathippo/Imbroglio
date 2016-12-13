@@ -3,17 +3,17 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """
 class _ProcessType(type):
 
-  def __new__(cls, name, bases, namespace):
-    new_cls = super().__new__(cls, name, bases, namespace)
-    if new_cls.root:
-      process = new_cls()
-      new_cls.root.register_process(process.process, priority=process.priority,
+  def __new__(meta, name, bases, namespace):
+    cls = super().__new__(meta, name, bases, namespace)
+    if cls.root:
+      process = cls()
+      cls.root.register_process(process.process, priority=process.priority,
                                     domain=process.domain, 
                                     startup=process.startup, 
                                     setup=process.setup, 
                                     teardown=process.teardown, 
                                     shutdown=process.shutdown)
-    return new_cls
+    return cls
 
 
 class BaseProcess(metaclass=_ProcessType):
