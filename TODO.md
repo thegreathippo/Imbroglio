@@ -58,4 +58,6 @@
 - Noncallable Process should raise an exception.
   - (So should all hooks if they are not callable!)
   - (But this should be done at the end; do all the operations, then raise the exception -- so we can bypass the exception if for some reason we want non-callable hooks)
+- Parser
+  - Strings that are neither functions nor part of the namespace should raise an exception.
     
