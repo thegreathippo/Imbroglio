@@ -4,6 +4,8 @@
 - OVERALL
   - config.py to store important constants
 - Entities
+  - `hasattr` should probably check for keywords in the root (System instance) via a try:except block.
+    - Test to see if this is already taken care of by how we've done `__getattr__`?
   - Change entity keyword (passed to parser) to constant. Remember: You'll have to update the unitcode to reflect this, too! (use config.py)
   - Entity Destruction? Removal of all components from an entity?
   - Hide `System.Entity` (`System._entity_cls`). Make access to it limited to a method (`System.entity`).
