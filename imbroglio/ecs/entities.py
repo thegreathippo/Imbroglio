@@ -23,7 +23,12 @@ class BaseEntity:
     super().__setattr__("_eid", eid)
     for key in kwargs:
       if kwargs[key] is None:
-        setattr(self, key, self.root.default[key])
+        default = self.root.default[key]
+        # if this is a class, like dict, or
+        # list, or a custom class, then instance it
+        if (isinstance(default, type)):
+          default = default()
+        setattr(self, key, default)
       else:
         setattr(self, key, kwargs[key])
 
@@ -31,7 +36,10 @@ class BaseEntity:
     return self._eid
 
   def __getattr__(self, attr):
-    value = self.root[attr][self._eid]
+    try:
+      value = self.root[attr][self._eid]
+    except KeyError:
+      super().__getattribute__(attr)
     if callable(value):
       return value()
     return value
