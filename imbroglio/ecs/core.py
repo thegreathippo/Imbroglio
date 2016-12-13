@@ -21,10 +21,13 @@ Example:
   >>> world.step()
   >>> player.x
   > 1
+
+TODO:
+  * More precise error handling.
+  * Method to destroy entities? 
 """
 
 from .entities import ComponentDict, BaseEntity
-from .modifiers import BaseModifierType
 from .values import BaseValue
 from .processes import BaseProcess
 
@@ -51,12 +54,6 @@ class System(dict):
       (via System.register_process).
     Value (class): Wraps component values (which allows for parsing and
       modifiers). For more information, see values.py.
-    ModType (class): Any class which inherits from this class will be 
-      automatically registered as a ModType for this System instance. 
-      Provided as an alternative to manually registering ModTypes (via 
-      System.register_modtype).
-    modtypes (dict): Names (strings) to classes (modifier types). For more 
-      information, see modifiers.py.
     running (boolean): True if the system is currently running; False if 
       it is not.
   """
@@ -70,7 +67,6 @@ class System(dict):
     self.default = dict(kwargs)
     self._processes = dict()
     self._process_queue = list()
-    self.modtypes = dict()
     self.eid = 0
     self.running = False
 
@@ -80,15 +76,11 @@ class System(dict):
     class Entity(BaseEntity):
       root = self
 
-    class ModType(BaseModifierType):
-      root = self
-    
     class Process(BaseProcess):
       root = self
 
     self.Value = Value
     self.Entity = Entity
-    self.ModType = ModType
     self.Process = Process
 
     for key in kwargs:
@@ -132,16 +124,6 @@ class System(dict):
                                 "shutdown":shutdown, "priority":priority}
     self._process_queue.append(process)
     self._process_queue.sort(key=lambda x: self._processes[x]["priority"])
-  
-  def register_modtype(self, modtype, name):
-    """Register a ModType under a name.
-
-    Args:
-      modtype (class): A class to be used as a Modifier Type.
-      name (str): The name this class will be put under. This name will be 
-        accessible as an attribute on Value instances.
-    """
-    self.modtypes[name] = modtype
   
   def step(self):
     """Take a single step within the System instance, executing all relevant 
