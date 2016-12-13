@@ -27,6 +27,9 @@
       - Could have a method access this instead (`System.entity`) and keep it private (`System._entity_cls`).
     - ModType
       - Offered so you can subclass ModTypes. Might handle this like Process, might not, depends on how we decide user interface for modifiers will ultimately work.
+  - Should components be able to be set to `None` as a default? What are the consequences of this? Can we test and find out?
+    - Benefit is that there are circumstances where we might want a component's default value to be `None` (such as if a component is concerned with who is holding an object).
+    - If the default is `None`, and we set it to `None`, haven't we set it to the default? What's the problem?
 - Process
   - Edit `_ProcessType` to check for `root` attribute on class before checking to see if it's None.
     - Should we raise an error if it's not there? Or just let it go?
