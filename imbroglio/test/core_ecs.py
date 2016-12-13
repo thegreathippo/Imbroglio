@@ -6,6 +6,8 @@ TODO:
     * Raise a custom error?
   * Test Modifier persistence?
   * When adding an attribute to an entity as None, default value?
+  * Test for Modifier recursion (when a modifier adds the thing it's modifying)
+    * Example: entity["x"].add("{entity.x}")
 """
 import unittest
 from ecs import System
@@ -225,9 +227,6 @@ class CoreEntityTest(unittest.TestCase):
     self.entity = self.system.Entity(x=None, y=None, z=None, w=None)
     self._died = False
 
-    class GenericMod(self.system.ModType):
-      pass
-
   def test_defaults(self):
     """Entity instances with default values."""
     self.assertEqual(self.entity.x, self.x)
@@ -261,8 +260,8 @@ class CoreEntityTest(unittest.TestCase):
     self.assertTrue(self._died)
 
   def test_entity_add_modifier(self):
-    """Adding a modifier changes the entity's component's output value."""
-    self.entity["x"].GenericMod.add(2)
+    """Adding an add-modifier changes the entity's component's output."""
+    mod = self.entity["x"].add(2)
     self.assertEqual(self.entity.x, self.x + 2)
     # Check to ensure base still remains the same.
     self.assertEqual(self.entity["x"].base, self.x)
@@ -270,10 +269,48 @@ class CoreEntityTest(unittest.TestCase):
     # Modifying the base should change the output without changing the mod.
     self.assertEqual(self.entity.x, 2)
 
-  def test_entity_remove_modifier(self):
-    """Removing a modifier reverts the entity's component's output value."""
-    mod = self.entity["x"].GenericMod.add(2)
-    self.entity["x"].GenericMod.remove(mod)
+  def test_entity_remove_add_modifier(self):
+    """Removing an add-modifier reverts the entity's component's output."""
+    mod = self.entity["x"].add(2)
+    mod.remove()
+    self.assertEqual(self.entity.x, self.x)
+  
+  def test_entity_add_formula_modifier(self):
+    """Add-modifiers allow for formulas (just like components)."""
+    mod = self.entity["x"].add("{entity.y * 2}")
+    self.assertEqual(self.entity.x, self.x + self.entity.y * 2)
+
+  def test_entity_remove_add_formula_modifier(self):
+    """Removing an add-modifier formula reverts the entity's component value."""
+    mod = self.entity["x"].add("{entity.y * 2}")
+    mod.remove()
+    self.assertEqual(self.entity.x, self.x)
+
+  def test_entity_swap_modifier(self):
+    """Adding a swap-modifier changes the entity's component's output."""
+    mod = self.entity["x"].swap(self.y)
+    self.assertEqual(self.entity.x, self.y)
+    # Check to ensure the base still remains the same.
+    self.assertEqual(self.entity["x"].base, self.x)
+    self.entity["x"].base = 0
+    # Modifying the base should NOT change the output.
+    self.assertEqual(self.entity.x, self.y)
+
+  def test_entity_remove_swap_modifier(self):
+    """Removing a swap-modifier reverts the entity's component's output."""
+    mod = self.entity["x"].swap(self.y)
+    mod.remove()
+    self.assertEqual(self.entity.x, self.x)
+  
+  def test_entity_swap_formula_modifier(self):
+    """Swap-modifiers allow for formulas (just like components)."""
+    mod = self.entity["x"].swap("{entity.y * 2}")
+    self.assertEqual(self.entity.x, self.y * 2)
+
+  def test_entity_remove_swap_formula_modifier(self):
+    """Removing a swap-modifier formula reverts the entity's component value."""
+    mod = self.entity["x"].swap("{entity.y * 2}")
+    mod.remove()
     self.assertEqual(self.entity.x, self.x)
 
   def test_entity_equivalence(self):
@@ -300,6 +337,3 @@ class CoreEntityTest(unittest.TestCase):
     entity.x = -1
     self.assertNotEqual(entity.x, self.entity.x)
     self.assertNotEqual(entity.w, self.entity.w)
-
-
-
