@@ -10,7 +10,8 @@ class BaseValue:
 
   def __init__(self, eid, value):
     self._eid = eid
-    self._modifiers = dict()
+    self._add_mods = list()
+    self._swap_mods = list()
     self.base = value
 
   @property
@@ -19,9 +20,9 @@ class BaseValue:
   
   @base.setter
   def base(self, value):
-    self._base = self._parse(self._eid, value)
+    self._base = self.parse(value)
   
-  def _parse(self, entity, value):
+  def parse(self, value):
     ret_value = value
     try:
       if value.startswith(OPEN) and value.endswith(CLOSE):
@@ -32,22 +33,54 @@ class BaseValue:
       pass
     return ret_value
 
-  def __call__(self):
+  def __call__(self, target=None):
     value = self.base
     if callable(value):
       value = value()
-    for mod in self._modifiers.values():
-      value = mod.modify(value)
+    for mod in self._swap_mods:
+      if callable(mod.value):
+        value = mod.value()
+      else:
+        value = mod.value
+    for mod in self._add_mods:
+      if callable(mod.value):
+        value += mod.value()
+      else:
+        value += mod.value
     return value
   
-  def __getattr__(self, attr):
-    if attr in self._modifiers:
-      return self._modifiers[attr]
-    else:
-      if attr in self.root.modtypes:
-        modifier = self.root.modtypes[attr]()
-        self._modifiers[attr] = modifier
-        return modifier
-    super().__getattribute__(attr)
+  def add(self, value, source=None, tags=None):
+    mod = Modifier(self, value, source, tags)
+    self._add_mods.append(mod)
+    return mod
+
+  def swap(self, value, source=None, tags=None):
+    mod = Modifier(self, value, source, tags)
+    self._swap_mods.append(mod)
+    return mod
+  
+  def remove(self, mod):
+    try:
+      self._add_mods.remove(mod)
+    except ValueError:
+      pass
+    try:
+      self._swap_mods.remove(mod)
+    except ValueError:
+      pass
+
+
+class Modifier:
+  def __init__(self, owner, mod_value, source, tags):
+    if tags is None:
+      tags = list()
+    self._owner = owner
+    self.source = source
+    self.tags = tags
+    self.value = owner.parse(mod_value)
+
+  def remove(self):
+    self._owner.remove(self)
+
 
 
