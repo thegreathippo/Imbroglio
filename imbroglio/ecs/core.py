@@ -86,10 +86,6 @@ class System(dict):
     for key in kwargs:
       self[key] = ComponentDict()
 
-    if any([True for k in self.default.values() if k is None]):
-      # Better exception later.
-      raise Exception("Component defaults cannot be None!")
-  
   def register_process(self, process, domain=None, priority=0, startup=_empty, 
                         setup=_empty, teardown=_empty, shutdown=_empty):
     """Register a process within this System instance.
