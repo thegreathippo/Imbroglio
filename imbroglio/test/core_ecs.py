@@ -10,7 +10,7 @@ TODO:
     * Example: entity["x"].add("{entity.x}")
 """
 import unittest
-from ecs import System
+from .ecs import System
 
 
 class CoreRegisteredProcessTest(unittest.TestCase):
@@ -86,7 +86,7 @@ class CoreRegisteredProcessTest(unittest.TestCase):
                                   setup=self.setup1, startup=self.startup1,
                                   teardown=self.teardown1, 
                                   shutdown=self.shutdown1)
-  
+
   def run_system(self, iterations=1):
     for i in range(0, iterations):
       self.system.step()
@@ -275,6 +275,27 @@ class CoreEntityTest(unittest.TestCase):
     mod.remove()
     self.assertEqual(self.entity.x, self.x)
   
+  def test_entity_add_multiple_untyped_modifiers(self):
+    """Adding multiple untyped modifiers has a cumulative effect."""
+    mod1 = self.entity["x"].add(1)
+    mod2 = self.entity["x"].add(2)
+    mod3 = self.entity["x"].add(3)
+    self.assertEqual(self.entity.x, self.x + 6)
+    # mods can be removed one by one in any order
+    mod2.remove()
+    self.assertEqual(self.entity.x, self.x + 4)
+
+  def test_entity_add_multiple_typed_modifiers(self):
+    """Adding multiple modifiers of the same type has a non-cumulative effect."""
+    mod3 = self.entity["x"].add(3, source="magic")
+    mod1 = self.entity["x"].add(1, source="magic")
+    mod2 = self.entity["x"].add(2, source="magic")
+    self.assertEqual(self.entity.x, self.x + 3)
+    mod1.remove()
+    self.assertEqual(self.entity.x, self.x + 3)
+    mod3.remove()
+    self.assertEqual(self.entity.x, self.x + 2)
+
   def test_entity_add_formula_modifier(self):
     """Add-modifiers allow for formulas (just like components)."""
     mod = self.entity["x"].add("{entity.y * 2}")
@@ -301,6 +322,28 @@ class CoreEntityTest(unittest.TestCase):
     mod = self.entity["x"].swap(self.y)
     mod.remove()
     self.assertEqual(self.entity.x, self.x)
+
+  def test_entity_swap_multiple_untyped_modifiers(self):
+    """Adding multiple untyped swap-modifiers causes each to replace the next."""
+    mod3 = self.entity["x"].swap(3)
+    mod1 = self.entity["x"].swap(1)
+    mod2 = self.entity["x"].swap(2)
+    self.assertEqual(self.entity.x, 2)
+    mod2.remove()
+    self.assertEqual(self.entity.x, 1)
+    mod3.remove()
+    self.assertEqual(self.entity.x, 1)
+
+  def test_entity_swap_multiple_typed_modifiers(self):
+    """Adding multiple swap-modifiers of the same type applies the biggest"""
+    mod3 = self.entity["x"].swap(3, source="magic")
+    mod1 = self.entity["x"].swap(1, source="magic")
+    mod2 = self.entity["x"].swap(2, source="magic")
+    self.assertEqual(self.entity.x, 3)
+    mod1.remove()
+    self.assertEqual(self.entity.x, 3)
+    mod3.remove()
+    self.assertEqual(self.entity.x, 2)
   
   def test_entity_swap_formula_modifier(self):
     """Swap-modifiers allow for formulas (just like components)."""
@@ -337,3 +380,5 @@ class CoreEntityTest(unittest.TestCase):
     entity.x = -1
     self.assertNotEqual(entity.x, self.entity.x)
     self.assertNotEqual(entity.w, self.entity.w)
+
+
