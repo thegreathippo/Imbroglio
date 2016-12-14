@@ -1,7 +1,7 @@
 """
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """
-import operations
+import .operations
 import re
 from weakref import WeakValueDictionary
 
