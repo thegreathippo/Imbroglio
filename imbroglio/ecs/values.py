@@ -1,7 +1,9 @@
 """
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """
-from .parser import Parser
+import parser as parse
+from modifiers import Modifiers
+Parser = parse.Parser
 
 OPEN, CLOSE = "{", "}"
 
@@ -10,8 +12,9 @@ class BaseValue:
 
   def __init__(self, eid, value):
     self._eid = eid
-    self._add_mods = list()
     self._swap_mods = list()
+    self.modifiers = Modifiers(self)
+    self.raw = value
     self.base = value
 
   @property
@@ -33,54 +36,31 @@ class BaseValue:
       pass
     return ret_value
 
-  def __call__(self, target=None):
+  def add(self, value, source=None, *tags):
+    def _add(val, modval):
+      if callable(modval):
+        modval = modval()
+      return val + modval
+    return self.modifiers(value, _add, source, *tags)
+  
+  def swap(self, value, source=None, *tags):
+    def _swap(val, modval):
+      if callable(modval):
+        modval = modval()
+      return modval
+    return self.modifiers(value, _swap, source, *tags)
+
+  def __call__(self):
     value = self.base
     if callable(value):
-      value = value()
-    for mod in self._swap_mods:
-      if callable(mod.value):
-        value = mod.value()
-      else:
-        value = mod.value
-    for mod in self._add_mods:
-      if callable(mod.value):
-        value += mod.value()
-      else:
-        value += mod.value
+      try:
+        value = value()
+      except parse.InvalidInternalError as e:
+        if e.raw.split(".")[1] in self.root:
+          return None
+        raise e
+    value = self.modifiers.modify(value)
     return value
   
-  def add(self, value, source=None, tags=None):
-    mod = Modifier(self, value, source, tags)
-    self._add_mods.append(mod)
-    return mod
-
-  def swap(self, value, source=None, tags=None):
-    mod = Modifier(self, value, source, tags)
-    self._swap_mods.append(mod)
-    return mod
-  
-  def remove(self, mod):
-    try:
-      self._add_mods.remove(mod)
-    except ValueError:
-      pass
-    try:
-      self._swap_mods.remove(mod)
-    except ValueError:
-      pass
-
-
-class Modifier:
-  def __init__(self, owner, mod_value, source, tags):
-    if tags is None:
-      tags = list()
-    self._owner = owner
-    self.source = source
-    self.tags = tags
-    self.value = owner.parse(mod_value)
-
-  def remove(self):
-    self._owner.remove(self)
-
 
 
