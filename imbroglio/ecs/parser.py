@@ -1,7 +1,7 @@
 """
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """
-from . import operations
+import operations
 import re
 from weakref import WeakValueDictionary
 
@@ -118,6 +118,7 @@ class _Internal:
 
   def __init__(self, path):
       _path = path.split(".")
+      self._raw = path
       self.root = _path[0]
       self.path = _path[1:]
 
@@ -126,10 +127,9 @@ class _Internal:
       for step in self.path:
         if step in self.namespace:
           step = self.namespace[step]
-        try:
-          value = getattr(value, step)
-        except (AttributeError, TypeError):
-          value = value[step]
+        if not hasattr(value, step):
+          raise InvalidInternalError(self._raw)
+        value = getattr(value, step)
       return value
 
 def _is_int(token):
@@ -153,3 +153,9 @@ def _format(operators, text):
     pattern = pattern[:i] + "\\" + pattern[i:]
   raw = re.split(pattern, text)
   return [e for e in raw if e != " " and e != ""]
+
+
+class InvalidInternalError(AttributeError):
+  def __init__(self, raw):
+    self.raw = raw
+    super().__init__("Invalid Internal: {}".format(raw))
