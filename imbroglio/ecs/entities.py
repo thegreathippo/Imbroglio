@@ -45,6 +45,9 @@ class BaseEntity:
     return value
 
   def __setattr__(self, attr, value):
+    if attr not in self.root:
+      #better exception later
+      raise Exception("System does not have {}".format(attr))
     if self._eid in self.root[attr]:
       self.root[attr][self._eid].base = value
     else:
