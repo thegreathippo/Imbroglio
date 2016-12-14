@@ -1,8 +1,8 @@
 """
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 """
-import parser as parse
-from modifiers import Modifiers
+import .parser as parse
+from .modifiers import Modifiers
 Parser = parse.Parser
 
 OPEN, CLOSE = "{", "}"
